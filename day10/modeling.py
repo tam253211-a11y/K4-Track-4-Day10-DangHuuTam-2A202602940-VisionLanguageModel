@@ -23,8 +23,24 @@ def quant_config():
         bnb_4bit_compute_dtype=torch.float16, bnb_4bit_use_double_quant=True,
         # giữ ViT (kể cả merger/deepstack) và lm_head ở fp16: nếu ViT bị lượng tử hoá 4-bit,
         # trọng số merger thành Params4bit (uint8 đóng gói) → không thể huấn luyện đầy đủ ở E2/E3.
-        llm_int8_skip_modules=["visual", "lm_head"],
+        # transformers 5.19 so khớp bằng re.match(key, full_name) — neo ở ĐẦU tên đầy đủ — nên "visual"
+        # (như GUIDE) KHÔNG khớp "model.visual.blocks..." và ViT bị lượng tử hoá âm thầm. Phải ghi "model.visual".
+        llm_int8_skip_modules=["model.visual", "lm_head"],
     )
+
+
+def assert_vit_not_quantized(model):
+    """ViT/projector phải là nn.Linear fp16 thường; LLM phải là Linear4bit."""
+    import bitsandbytes as bnb
+    base = model.get_base_model() if hasattr(model, "get_base_model") else model
+    vis = [(n, m) for n, m in base.named_modules() if ".visual." in f".{n}." and isinstance(m, torch.nn.Linear)]
+    q_vis = [n for n, m in vis if isinstance(m, bnb.nn.Linear4bit)]
+    q_llm = sum(isinstance(m, bnb.nn.Linear4bit) for n, m in base.named_modules() if "language_model" in n)
+    if q_vis or not q_llm:
+        raise RuntimeError(f"lượng tử hoá sai: {len(q_vis)} Linear của ViT bị 4-bit (vd {q_vis[:2]}), "
+                           f"{q_llm} Linear4bit trong LLM")
+    print(f"[quant] LLM: {q_llm} Linear4bit · ViT+projector: {len(vis)} nn.Linear "
+          f"{base.model.visual.merger.linear_fc1.weight.dtype} (không lượng tử hoá)")
 
 
 def load_processor(model_id=MODEL_ID):
@@ -36,8 +52,10 @@ def load_processor(model_id=MODEL_ID):
 
 def load_base(model_id=MODEL_ID):
     from transformers import Qwen3VLForConditionalGeneration
-    return Qwen3VLForConditionalGeneration.from_pretrained(
+    model = Qwen3VLForConditionalGeneration.from_pretrained(
         model_id, quantization_config=quant_config(), dtype=torch.float16, device_map={"": 0})
+    assert_vit_not_quantized(model)
+    return model
 
 
 def is_projector(name):

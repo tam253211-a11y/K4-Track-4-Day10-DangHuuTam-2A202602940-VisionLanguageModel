@@ -4,6 +4,18 @@ Các bẫy kỹ thuật mình gặp hoặc phát hiện khi đối chiếu pseud
 phiên bản đã ghim (`transformers==5.19.0`, `peft==0.21.2`, `trl==1.9.2`). Mỗi mục ghi: triệu chứng → nguyên nhân → cách
 xử lý trong repo này.
 
+## 0. `llm_int8_skip_modules=["visual", "lm_head"]` KHÔNG giữ được ViT ở fp16 (transformers 5.19) — nghiêm trọng nhất
+- **Triệu chứng (bắt được khi chạy thử trên GPU):** E2 báo `projector_params = 54.579.200` — đúng **một nửa** con số
+  109.105.152 đếm trên model meta — rồi `ValueError: Attempting to unscale FP16 gradients`.
+- **Nguyên nhân:** `transformers/quantizers/quantizers_utils.py::should_convert_module` bỏ qua module khi
+  `re.match(key, full_name)` (neo ở **đầu** tên) hoặc `full_name.endswith(key)`. Tên thật là `model.visual.blocks...`,
+  nên `"visual"` không bao giờ khớp → toàn bộ ViT + merger + deepstack bị lượng tử hoá 4-bit **âm thầm** (Params4bit
+  đóng gói 2 giá trị/byte nên `numel()` còn một nửa). `"lm_head"` vẫn khớp vì tên đúng là `lm_head`.
+  Hệ quả nếu không phát hiện: E0–E3 chạy trên ViT 4-bit, và E2/E3 "mở projector" thực chất ép kiểu byte đóng gói sang
+  float32 — huấn luyện trên rác.
+- **Xử lý:** `llm_int8_skip_modules=["model.visual", "lm_head"]` và `assert_vit_not_quantized()` chạy ngay sau mỗi lần
+  nạp model: in `LLM: 252 Linear4bit · ViT+projector: 104 nn.Linear torch.float16`, báo lỗi nếu ViT có Linear4bit.
+
 ## 1. Collate mẫu thiếu `mm_token_type_ids` → lỗi ngay ở bước forward
 - **Triệu chứng:** `ValueError: Multimodal data was passed (via image_grid_thw ...) but mm_token_type_ids is missing`.
 - **Nguyên nhân:** `Qwen3VLModel` (transformers 5.19) cần `mm_token_type_ids` để tính M-RoPE 3D cho token ảnh; processor
