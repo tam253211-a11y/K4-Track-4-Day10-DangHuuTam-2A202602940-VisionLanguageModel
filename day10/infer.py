@@ -83,6 +83,13 @@ def main(argv=None):
     records = load_split(a.split)
     if a.limit:
         records = records[:a.limit]
+    if Path(a.out).exists():
+        with open(a.out, encoding="utf-8") as f:
+            done = {json.loads(line)["image_id"] for line in f if line.strip()}
+        if all(r["image_id"] in done for r in records):
+            print(f"[skip] {a.out} đã đủ {len(records)} ảnh")
+            show_raw(a.out)
+            return
     processor = load_processor()
     torch.cuda.reset_peak_memory_stats()
     if a.zero_shot:

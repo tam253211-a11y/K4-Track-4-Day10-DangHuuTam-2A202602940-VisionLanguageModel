@@ -76,7 +76,11 @@ def main(argv=None):
     ap.add_argument("--save-every", type=int, default=100)
     ap.add_argument("--num-workers", type=int, default=2)
     ap.add_argument("--backup-dir", help="vd /content/drive/MyDrive/day10_vlm")
+    ap.add_argument("--force", action="store_true", help="train lại dù đã có run.json")
     a = ap.parse_args(argv)
+    if (Path(a.out) / "run.json").exists() and not a.force:
+        print(f"[skip] {a.out}/run.json đã có — bỏ qua (dùng --force để train lại)")
+        return
 
     cfg = load_config(a.config)
     lora = cfg["lora"]

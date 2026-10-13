@@ -51,7 +51,11 @@ def main(argv=None):
     ap.add_argument("--grad-accum", type=int, default=2)
     ap.add_argument("--temperature", type=float, default=1.0)
     ap.add_argument("--backup-dir")
+    ap.add_argument("--force", action="store_true")
     a = ap.parse_args(argv)
+    if (Path(a.out) / "run.json").exists() and not a.force:
+        print(f"[skip] {a.out}/run.json đã có — bỏ qua (dùng --force để chạy lại)")
+        return
 
     g = load_config(a.config)["grpo"]
     max_steps = a.max_steps or g["max_steps"]
