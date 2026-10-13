@@ -1,0 +1,8 @@
+{
+  "split": "test",
+  "n": 311,
+  "coord": "norm1000",
+  "infer_minutes": 2.8,
+  "peak_vram_gb_infer": 4.11,
+  "gpu": "NVIDIA GeForce RTX 5090"
+}

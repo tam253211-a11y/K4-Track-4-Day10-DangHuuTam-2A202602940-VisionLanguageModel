@@ -1,0 +1,42 @@
+[data] 142 ảnh train, coord=norm1000
+[check] image_grid_thw=[[1, 22, 40]] → 220 token ảnh; seq=397 token, học 85 token
+[check] labels giải mã: '[{"label":"crack","bbox_2d":[127,661,267,742]},{"label":"crack","bbox_2d":[336,675,395,767]},{"label":"crack","bbox_2d":[528,703,570,786]}]<|im_end|>\n'
+[quant] LLM: 252 Linear4bit · ViT+projector: 104 nn.Linear torch.float16 (không lượng tử hoá)
+[apply_setup] targets=llm+vit projector=True r=16 alpha=32 → {'lora_modules': 348, 'lora_params': 39321600, 'projector_params': 109105152, 'trainable_params': 148426752}
+[transformers] `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+step    1/300 loss=2.1287 lr=2.67e-05 gnorm=6.71 0.0ph (còn ~12.2ph) vram_peak=6.55GB
+step   10/300 loss=0.7450 lr=1.47e-04 gnorm=1.39 0.3ph (còn ~7.5ph) vram_peak=8.07GB
+step   20/300 loss=0.6454 lr=2.00e-04 gnorm=0.85 0.5ph (còn ~7.4ph) vram_peak=8.28GB
+step   30/300 loss=0.5627 lr=1.99e-04 gnorm=0.67 0.9ph (còn ~8.4ph) vram_peak=8.28GB
+step   40/300 loss=0.4817 lr=1.96e-04 gnorm=1.00 1.3ph (còn ~8.6ph) vram_peak=8.28GB
+step   50/300 loss=0.5413 lr=1.93e-04 gnorm=1.32 1.7ph (còn ~8.6ph) vram_peak=8.28GB
+step   60/300 loss=0.4213 lr=1.88e-04 gnorm=1.81 2.1ph (còn ~8.5ph) vram_peak=8.28GB
+step   70/300 loss=0.5297 lr=1.82e-04 gnorm=0.59 2.5ph (còn ~8.3ph) vram_peak=8.28GB
+step   80/300 loss=0.4866 lr=1.75e-04 gnorm=1.06 2.9ph (còn ~8.0ph) vram_peak=8.28GB
+step   90/300 loss=0.4515 lr=1.68e-04 gnorm=0.94 3.3ph (còn ~7.7ph) vram_peak=8.28GB
+step  100/300 loss=0.3940 lr=1.59e-04 gnorm=0.73 3.7ph (còn ~7.5ph) vram_peak=8.28GB
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[save] work/e4_data_0.1/ckpt-100 + projector (24 tensor)
+step  110/300 loss=0.3398 lr=1.50e-04 gnorm=1.88 4.1ph (còn ~7.1ph) vram_peak=8.28GB
+step  120/300 loss=0.3603 lr=1.40e-04 gnorm=0.63 4.5ph (còn ~6.8ph) vram_peak=8.28GB
+step  130/300 loss=0.3147 lr=1.30e-04 gnorm=6.01 4.9ph (còn ~6.5ph) vram_peak=8.28GB
+step  140/300 loss=0.3120 lr=1.19e-04 gnorm=0.97 5.3ph (còn ~6.1ph) vram_peak=8.28GB
+step  150/300 loss=0.2864 lr=1.08e-04 gnorm=0.89 5.8ph (còn ~5.8ph) vram_peak=8.28GB
+step  160/300 loss=0.2606 lr=9.72e-05 gnorm=1.14 6.2ph (còn ~5.4ph) vram_peak=8.28GB
+step  170/300 loss=0.2449 lr=8.63e-05 gnorm=1.24 6.6ph (còn ~5.0ph) vram_peak=8.28GB
+step  180/300 loss=0.1731 lr=7.55e-05 gnorm=1.54 7.0ph (còn ~4.6ph) vram_peak=8.28GB
+step  190/300 loss=0.1818 lr=6.49e-05 gnorm=1.84 7.4ph (còn ~4.3ph) vram_peak=8.28GB
+step  200/300 loss=0.1147 lr=5.48e-05 gnorm=1.37 7.7ph (còn ~3.8ph) vram_peak=8.28GB
+[save] work/e4_data_0.1/ckpt-200 + projector (24 tensor)
+step  210/300 loss=0.1054 lr=4.53e-05 gnorm=1.18 8.1ph (còn ~3.5ph) vram_peak=8.28GB
+step  220/300 loss=0.0455 lr=3.64e-05 gnorm=0.85 8.5ph (còn ~3.1ph) vram_peak=8.28GB
+step  230/300 loss=0.0623 lr=2.83e-05 gnorm=2.30 8.9ph (còn ~2.7ph) vram_peak=8.28GB
+step  240/300 loss=0.0220 lr=2.11e-05 gnorm=0.66 9.2ph (còn ~2.3ph) vram_peak=8.28GB
+step  250/300 loss=0.0248 lr=1.48e-05 gnorm=0.51 9.6ph (còn ~1.9ph) vram_peak=8.28GB
+step  260/300 loss=0.0125 lr=9.56e-06 gnorm=0.84 10.0ph (còn ~1.5ph) vram_peak=8.28GB
+step  270/300 loss=0.0073 lr=5.42e-06 gnorm=0.24 10.4ph (còn ~1.2ph) vram_peak=8.28GB
+step  280/300 loss=0.0082 lr=2.42e-06 gnorm=0.53 10.8ph (còn ~0.8ph) vram_peak=8.28GB
+step  290/300 loss=0.0049 lr=6.07e-07 gnorm=0.15 11.2ph (còn ~0.4ph) vram_peak=8.28GB
+step  300/300 loss=0.0092 lr=0.00e+00 gnorm=0.23 11.5ph (còn ~0.0ph) vram_peak=8.28GB
+[save] work/e4_data_0.1/adapter + projector (24 tensor)
+[done] E4_data_0.1: trainable=148,426,752 peak_vram=8.28GB time=11.5ph loss 1.222 → 0.007

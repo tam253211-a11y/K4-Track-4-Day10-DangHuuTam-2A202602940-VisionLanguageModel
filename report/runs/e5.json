@@ -1,0 +1,23 @@
+{
+  "model_id": "Qwen/Qwen3-VL-4B-Instruct",
+  "targets": "llm+vit",
+  "train_projector": true,
+  "r": 16,
+  "alpha": 32,
+  "coord": "norm1000",
+  "name": "E5",
+  "init": "work/e3",
+  "algo": "GRPO",
+  "num_generations": 4,
+  "max_completion_length": 128,
+  "max_steps": 60,
+  "learning_rate": 5e-06,
+  "beta": 0.0,
+  "temperature": 1.0,
+  "n_train_images": 480,
+  "n_empty_images": 0,
+  "trainable_params": 39321600,
+  "peak_vram_gb": 6.12,
+  "train_minutes": 7.1,
+  "gpu": "NVIDIA GeForce RTX 5090"
+}
